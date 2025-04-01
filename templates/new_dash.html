@@ -1,0 +1,54 @@
+{% extends 'user_layout.html' %}
+
+{% block title %}Current Reading - Pain With Purpose{% endblock %}
+
+{% block content %}
+<div class="max-w-4xl mx-auto px-4 py-10">
+  <!-- Header & Progress Summary -->
+  <div class="flex justify-between items-center mb-6">
+    <h1 class="text-xl font-bold">Personal Reward Page</h1>
+    <div class="flex items-center gap-4">
+      <div class="w-48 bg-gray-200 rounded-full h-6 relative">
+        <div class="bg-yellow-400 h-6 rounded-full" style="width: {{ progress }}%"></div>
+        <span class="absolute text-xs left-2 top-1 text-black">{{ progress }}%</span>
+      </div>
+      {% if prioritized_reward %}
+      <span class="text-sm font-semibold">{{ prioritized_reward.name }}</span>
+      {% endif %}
+      <a href="/logout" class="ml-4 text-sm text-red-500 hover:underline">Logout</a>
+    </div>
+  </div>
+
+  <!-- Add Book Form -->
+  <div class="bg-white shadow-md rounded-lg p-6 mb-10">
+    <h2 class="text-2xl font-semibold mb-4">Add Book to Your Library</h2>
+    <form action="/reading/add" method="POST" class="grid grid-cols-1 sm:grid-cols-3 gap-4 items-end">
+      {{ form.csrf_token }}
+      {{ form.book_name(class="w-full p-3 border border-gray-300 rounded-lg", placeholder="Book Name") }}
+      {{ form.total_pages(class="w-full p-3 border border-gray-300 rounded-lg", placeholder="Total Pages") }}
+      <button type="submit" class="bg-black text-white py-3 px-6 rounded-lg">Add</button>
+    </form>
+  </div>
+
+  <!-- Current Reading Section -->
+  <h3 class="text-xl font-semibold text-pink-600 mb-4">Current Reading</h3>
+  <div class="grid grid-cols-1 sm:grid-cols-3 gap-6">
+    {% for book in books %}
+    <div class="flex flex-col items-center">
+      <svg viewBox="0 0 36 36" class="w-28 h-28">
+        <path class="text-gray-200" d="M18 2.0845
+              a 15.9155 15.9155 0 0 1 0 31.831
+              a 15.9155 15.9155 0 0 1 0 -31.831" fill="none" stroke-width="2.5" />
+        <path class="text-pink-400" stroke-dasharray="100, 100" stroke-dashoffset="{{ 100 - book.progress }}"
+              d="M18 2.0845
+              a 15.9155 15.9155 0 0 1 0 31.831
+              a 15.9155 15.9155 0 0 1 0 -31.831"
+              fill="none" stroke-width="2.5" stroke-linecap="round" />
+      </svg>
+      <p class="mt-2 text-sm font-medium text-center">{{ book.name }}</p>
+      <p class="text-xs text-gray-500">{{ book.progress }}% complete</p>
+    </div>
+    {% endfor %}
+  </div>
+</div>
+{% endblock %}
