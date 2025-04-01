@@ -1,0 +1,67 @@
+{% extends 'user_layout.html' %}
+
+{% block title %}Rewards - Pain With Purpose{% endblock %}
+
+{% block content %}
+<div class="max-w-4xl mx-auto px-4 py-10">
+  <!-- Header Section -->
+  <div class="flex justify-between items-center mb-6">
+    <h1 class="text-3xl font-bold">Reward Your Self</h1>
+    <div class="flex items-center gap-4">
+      <div class="w-48 bg-gray-200 rounded-full h-6 relative">
+        <div class="bg-yellow-400 h-6 rounded-full" style="width: {{ progress }}%"></div>
+        <span class="absolute text-xs left-2 top-1 text-black">{{ progress }}%</span>
+      </div>
+      {% if prioritized_reward %}
+      <span class="text-sm font-semibold">{{ prioritized_reward.name }}</span>
+      {% endif %}
+      <a href="/logout" class="ml-4 text-sm text-red-500 hover:underline">Logout</a>
+    </div>
+  </div>
+
+  <!-- New Reward Form -->
+  <form action="/rewards" method="POST" class="mb-8">
+    {{ form.csrf_token }}
+    <div class="flex flex-col sm:flex-row gap-4 items-center">
+      {{ form.name(class="w-full sm:w-1/2 p-3 border border-gray-300 rounded-lg", placeholder="New Reward") }}
+      {{ form.points(class="w-full sm:w-1/2 p-3 border border-gray-300 rounded-lg", placeholder="Point Req") }}
+      <button type="submit" class="bg-black text-white px-6 py-3 rounded-lg">Add</button>
+    </div>
+  </form>
+
+  <!-- Reward List Table -->
+  {% if rewards %}
+  <table class="w-full text-left border-collapse">
+    <thead>
+      <tr class="border-b">
+        <th class="py-2">#</th>
+        <th>Reward</th>
+        <th>Points</th>
+        <th class="text-center">Actions</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for reward in rewards %}
+      <tr class="border-b">
+        <td class="py-2">{{ loop.index }}</td>
+        <td>{{ reward.name }}</td>
+        <td>{{ reward.points }} pts</td>
+        <td class="text-center">
+          <form action="/rewards/remove/{{ reward.id }}" method="POST" class="inline">
+            {{ form.csrf_token }}
+            <button type="submit" class="text-red-500 hover:underline">Remove</button>
+          </form>
+          {% if not reward.prioritized %}
+          <form action="/rewards/prioritize/{{ reward.id }}" method="POST" class="inline ml-4">
+            {{ form.csrf_token }}
+            <button type="submit" class="text-blue-500 hover:underline">Prioritize</button>
+          </form>
+          {% endif %}
+        </td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+  {% endif %}
+</div>
+{% endblock %}
